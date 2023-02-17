@@ -2,14 +2,12 @@ import { Component } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { nanoid } from 'nanoid';
 
-
-import { FilterList  } from '../FilterList/FilterList';
+import { FilterList } from '../FilterList/FilterList';
 import { Form } from '../Form/Form';
 import { Filter } from '../Filter/Filter';
 
-import 'react-toastify/dist/ReactToastify.css'
+import 'react-toastify/dist/ReactToastify.css';
 import { Container, Title, Subtitle } from './App.styled';
-
 
 export class App extends Component {
   state = {
@@ -21,6 +19,20 @@ export class App extends Component {
     ],
     filter: '',
   };
+
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   addNewContact = ({ name, number }) => {
     const foundName = this.state.contacts.find(
@@ -66,12 +78,15 @@ export class App extends Component {
   render() {
     return (
       <Container>
-        <ToastContainer position="top-center" theme="colored"/>
+        <ToastContainer position="top-center" theme="colored" />
         <Title>PhoneBook</Title>
         <Form onSubmit={this.addNewContact} />
         <Subtitle>Contacts</Subtitle>
         <Filter onChangeInput={this.changeInput} />
-        <FilterList  onDeleteContacts={this.deleteContact} contacts={this.visibleContacts()} />
+        <FilterList
+          onDeleteContacts={this.deleteContact}
+          contacts={this.visibleContacts()}
+        />
       </Container>
     );
   }
